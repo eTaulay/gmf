@@ -104,7 +104,7 @@ func DefaultResampler(ost *Stream, frames []*Frame, flush bool) []*Frame {
 			winFrame = ost.AvFifo.Read(frameSize)
 			winFrame.SetChannelLayout(ost.CodecCtx().GetDefaultChannelLayout(ost.CodecCtx().Channels()))
 
-			tmpFrame, _ = ost.SwrCtx.Convert(winFrame)
+			tmpFrame, _, _ = ost.SwrCtx.Convert(winFrame)
 			if tmpFrame == nil || tmpFrame.IsNil() {
 				break
 			}
