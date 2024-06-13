@@ -8,7 +8,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/3d0c/gmf"
+	"github.com/eTaulay/gmf"
 )
 
 type arrayFlags []string

@@ -1,6 +1,6 @@
 package main
 
-// BUG(3d0c):
+// BUG(eTaulay):
 // 1.
 //   Insufficient thread locking around avcodec_open/close()
 //   [NULL @ 0x6001200] No lock manager is set, please see av_lockmgr_register()
@@ -14,7 +14,7 @@ import (
 	"log"
 	"sync"
 
-	. "github.com/3d0c/gmf"
+	. "github.com/eTaulay/gmf"
 )
 
 func fatal(err error) {
