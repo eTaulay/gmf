@@ -22,6 +22,14 @@ void gmf_set_frame_data(AVFrame *frame, int idx, int l_size, uint8_t data) {
     frame->data[idx][l_size] = data;
 }
 
+void gmf_fill_frame_data(AVFrame *frame, int idx, int l_size, const uint8_t *data) {
+    if(!frame) {
+        fprintf(stderr, "frame is NULL\n");
+    }
+
+    memcpy(frame->data[idx], data, l_size);
+}
+
 int gmf_get_frame_line_size(AVFrame *frame, int idx) {
 	return frame->linesize[idx];
 }
@@ -219,6 +227,10 @@ func (f *Frame) SetData(idx int, lineSize int, data int) *Frame {
 	C.gmf_set_frame_data(f.avFrame, C.int(idx), C.int(lineSize), (C.uint8_t)(data))
 
 	return f
+}
+
+func (f *Frame) FillData(idx int, lineSize int, data *byte) {
+	C.gmf_fill_frame_data(f.avFrame, C.int(idx), C.int(lineSize), (*C.uint8_t)(data))
 }
 
 func (f *Frame) LineSize(idx int) int {

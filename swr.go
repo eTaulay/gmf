@@ -26,16 +26,18 @@ import (
 )
 
 type SwrCtx struct {
-	swrCtx   *C.struct_SwrContext
-	channels int
-	format   int32
+	swrCtx    *C.struct_SwrContext
+	channels  int
+	nbSamples int
+	format    int32
 }
 
-func NewSwrCtx(options []*Option, channels int, format int32) (*SwrCtx, error) {
+func NewSwrCtx(options []*Option, channels, nbSamples int, format int32) (*SwrCtx, error) {
 	ctx := &SwrCtx{
-		swrCtx:   C.swr_alloc(),
-		channels: channels,
-		format:   format,
+		swrCtx:    C.swr_alloc(),
+		channels:  channels,
+		nbSamples: nbSamples,
+		format:    format,
 	}
 
 	for _, option := range options {
@@ -53,19 +55,19 @@ func (ctx *SwrCtx) Free() {
 	C.swr_free(&ctx.swrCtx)
 }
 
-func (ctx *SwrCtx) Convert(input *Frame) (*Frame, error) {
+func (ctx *SwrCtx) Convert(input *Frame) (*Frame, int, error) {
 	var (
 		dst *Frame
 		err error
 	)
 
-	if dst, err = NewAudioFrame(ctx.format, ctx.channels, input.NbSamples()); err != nil {
-		return nil, fmt.Errorf("error creating new audio frame - %s\n", err)
+	if dst, err = NewAudioFrame(ctx.format, ctx.channels, ctx.nbSamples); err != nil {
+		return nil, -1, fmt.Errorf("error creating new audio frame - %s\n", err)
 	}
 
-	C.gmf_sw_resample(ctx.swrCtx, dst.avFrame, input.avFrame)
+	nb_samples := int(C.gmf_sw_resample(ctx.swrCtx, dst.avFrame, input.avFrame))
 
-	return dst, nil
+	return dst, nb_samples, nil
 }
 
 func (ctx *SwrCtx) Flush(nbSamples int) (*Frame, error) {
